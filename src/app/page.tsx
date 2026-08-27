@@ -81,6 +81,7 @@ export default function Home() {
   const [analysis, setAnalysis] = useState<ArchitectureAnalysis | null>(null);
   const [projection, setProjection] = useState<CostProjection | null>(null);
   const [optimizations, setOptimizations] = useState<Optimization[]>([]);
+  const [optimizeError, setOptimizeError] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [showOptimizations, setShowOptimizations] = useState(false);
 
@@ -94,8 +95,13 @@ export default function Home() {
     setAnalysis(null);
     setProjection(null);
     setOptimizations([]);
+    setOptimizeError(null);
     setSelectedService(null);
     setShowOptimizations(false);
+
+    // 90-second timeout — if Gemini is unreachable, show error instead of hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90_000);
 
     try {
       // Step 1: Analyze architecture
@@ -103,6 +109,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ description }),
+        signal: controller.signal,
       });
 
       if (!analyzeRes.ok) {
@@ -118,30 +125,39 @@ export default function Home() {
       const costProjection = calculateCostProjection(analysisResult);
       setProjection(costProjection);
 
-      // Step 3: Get optimizations
+      // Step 3: Get optimizations (non-critical — analysis still shows if this fails)
       setState("optimizing");
-      const optimizeRes = await fetch("/api/optimize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projection: costProjection,
-          appDescription: description,
-        }),
-      });
+      try {
+        const optimizeRes = await fetch("/api/optimize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            projection: costProjection,
+            appDescription: description,
+          }),
+          signal: controller.signal,
+        });
 
-      if (optimizeRes.ok) {
-        const optimizeResult = await optimizeRes.json();
-        setOptimizations(optimizeResult.optimizations || []);
+        if (optimizeRes.ok) {
+          const optimizeResult = await optimizeRes.json();
+          setOptimizations(optimizeResult.optimizations || []);
+        } else {
+          setOptimizeError("Optimization suggestions are temporarily unavailable. Your cost analysis is still complete.");
+        }
+      } catch {
+        setOptimizeError("Optimization suggestions are temporarily unavailable. Your cost analysis is still complete.");
       }
-      // Optimizations are non-critical — if they fail, we still show the analysis
 
       setState("done");
     } catch (error) {
       console.error("Analysis error:", error);
       setState("error");
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong. Please try again."
-      );
+      const msg = error instanceof DOMException && error.name === "AbortError"
+        ? "The request timed out. The AI service may be slow — please try again."
+        : error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      toast.error(msg);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }, [description]);
 
@@ -150,6 +166,7 @@ export default function Home() {
     setAnalysis(null);
     setProjection(null);
     setOptimizations([]);
+    setOptimizeError(null);
     setSelectedService(null);
     setShowOptimizations(false);
   }, []);
@@ -233,7 +250,7 @@ ${formatCurrency(totalSavings)}/month
   const isLoading = state === "analyzing" || state === "projecting" || state === "optimizing";
 
   return (
-    <main className="flex-1 flex flex-col">
+    <main className="flex-1 flex flex-col" aria-live="polite" aria-atomic="false">
       {/* Hero / Landing section — only visible when idle */}
       {state === "idle" && (
         <section className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:py-24 max-w-4xl mx-auto w-full">
@@ -337,6 +354,7 @@ ${formatCurrency(totalSavings)}/month
           analysis={analysis}
           projection={projection}
           optimizations={optimizations}
+          optimizeError={optimizeError}
           selectedService={selectedService}
           setSelectedService={setSelectedService}
           showOptimizations={showOptimizations}
@@ -418,6 +436,7 @@ function ResultsView({
   analysis,
   projection,
   optimizations,
+  optimizeError,
   selectedService,
   setSelectedService,
   showOptimizations,
@@ -428,6 +447,7 @@ function ResultsView({
   analysis: ArchitectureAnalysis;
   projection: CostProjection;
   optimizations: Optimization[];
+  optimizeError: string | null;
   selectedService: string | null;
   setSelectedService: (id: string | null) => void;
   showOptimizations: boolean;
@@ -496,7 +516,7 @@ function ResultsView({
           return (
             <Card
               key={service.id}
-              className={`p-4 cursor-pointer transition-all hover:shadow-md ${
+              className={`p-4 cursor-pointer transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
                 isSelected ? "ring-2 ring-primary" : ""
               }`}
               onClick={() => setSelectedService(isSelected ? null : service.id)}
@@ -655,6 +675,18 @@ function ResultsView({
       </Card>
 
       {/* Optimization suggestions */}
+      <div aria-live="polite" aria-atomic="true">
+      {optimizeError && (
+        <Card className="p-4 mb-4 border-muted bg-muted/30">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" aria-hidden="true" />
+            <div>
+              <p className="text-sm font-medium">Optimizations unavailable</p>
+              <p className="text-sm text-muted-foreground mt-1">{optimizeError}</p>
+            </div>
+          </div>
+        </Card>
+      )}
       {optimizations.length > 0 && (
         <>
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
@@ -730,6 +762,7 @@ function ResultsView({
           )}
         </>
       )}
+      </div>
 
       {/* Footer */}
       <div className="text-center py-6 border-t">

@@ -17,10 +17,10 @@ export interface ApiService {
   // Pricing model
   pricing: {
     unit: string; // e.g. "per 1M tokens", "per transaction", "per email", "per GB-month"
-    inputRate?: number; // for AI models (per unit)
-    outputRate?: number; // for AI models (per unit)
-    flatRate?: number; // for flat-rate services (per month)
-    freeTier?: number; // free tier allowance per month
+    inputRate: number | null; // for AI models (per unit)
+    outputRate: number | null; // for AI models (per unit)
+    flatRate: number | null; // for flat-rate services (per month)
+    freeTier: number | null; // free tier allowance per month
     description: string;
   };
 }

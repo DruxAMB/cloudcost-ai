@@ -78,31 +78,45 @@ Suggest specific optimizations to reduce this bill. Return the JSON.`;
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
-    const result = await model.generateContent([
-      { text: SYSTEM_PROMPT },
-      { text: prompt },
-    ]);
+    let parsed: { optimizations: Optimization[] } | null = null;
+    let lastError: string | null = null;
 
-    const responseText = result.response.text();
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const result = await model.generateContent([
+          { text: SYSTEM_PROMPT },
+          { text: prompt },
+        ]);
 
-    let jsonText = responseText.trim();
-    if (jsonText.startsWith("```")) {
-      jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+        const responseText = result.response.text();
+        let jsonText = responseText.trim();
+        if (jsonText.startsWith("```")) {
+          jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+        }
+        // Extract JSON block if embedded in prose
+        const jsonStart = jsonText.indexOf("{");
+        const jsonEnd = jsonText.lastIndexOf("}");
+        if (jsonStart >= 0 && jsonEnd > jsonStart) {
+          jsonText = jsonText.slice(jsonStart, jsonEnd + 1);
+        }
+
+        const candidate = JSON.parse(jsonText) as { optimizations: Optimization[] };
+        if (candidate.optimizations && Array.isArray(candidate.optimizations)) {
+          parsed = candidate;
+          break;
+        }
+        lastError = "Missing optimizations array";
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : "Parse error";
+      }
+      if (attempt < 3) {
+        await new Promise((r) => setTimeout(r, 500 * attempt));
+      }
     }
 
-    let parsed: { optimizations: Optimization[] };
-    try {
-      parsed = JSON.parse(jsonText);
-    } catch {
+    if (!parsed) {
       return NextResponse.json(
-        { error: "Failed to parse optimization response. Please try again." },
-        { status: 500 }
-      );
-    }
-
-    if (!parsed.optimizations || !Array.isArray(parsed.optimizations)) {
-      return NextResponse.json(
-        { error: "Optimization response was missing required data." },
+        { error: `Optimization failed after 3 attempts: ${lastError}` },
         { status: 500 }
       );
     }

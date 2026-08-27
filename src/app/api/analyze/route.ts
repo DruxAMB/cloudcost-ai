@@ -79,6 +79,50 @@ Rules:
 - The perUserPerMonth for Algolia should be in SEARCHES
 - Return ONLY the JSON, no markdown formatting, no code fences`;
 
+const MAX_RETRIES = 3;
+
+function parseGeminiResponse(text: string): ArchitectureAnalysis | null {
+  let jsonText = text.trim();
+  // Strip markdown code fences if present
+  if (jsonText.startsWith("```")) {
+    jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
+  // Also handle cases where JSON is embedded in prose — extract the first { ... } block
+  const jsonStart = jsonText.indexOf("{");
+  const jsonEnd = jsonText.lastIndexOf("}");
+  if (jsonStart >= 0 && jsonEnd > jsonStart) {
+    jsonText = jsonText.slice(jsonStart, jsonEnd + 1);
+  }
+
+  try {
+    const parsed = JSON.parse(jsonText) as ArchitectureAnalysis;
+    // Validate required structure
+    if (!parsed.services || !Array.isArray(parsed.services) || parsed.services.length === 0) {
+      return null;
+    }
+    // Sanitize: ensure pricing fields are numbers or null (not strings)
+    parsed.services = parsed.services.map((s) => ({
+      ...s,
+      pricing: {
+        unit: s.pricing?.unit ?? "",
+        inputRate: s.pricing?.inputRate ?? null,
+        outputRate: s.pricing?.outputRate ?? null,
+        flatRate: s.pricing?.flatRate ?? null,
+        freeTier: s.pricing?.freeTier ?? null,
+        description: s.pricing?.description ?? "",
+      },
+      usageEstimate: {
+        metric: s.usageEstimate?.metric ?? "requests",
+        perUserPerMonth: Number(s.usageEstimate?.perUserPerMonth) || 0,
+        description: s.usageEstimate?.description ?? "",
+      },
+    }));
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { description } = await request.json();
@@ -95,33 +139,39 @@ export async function POST(request: NextRequest) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
-    const result = await model.generateContent([
-      { text: SYSTEM_PROMPT },
-      { text: `Analyze this app description and return the JSON:\n\n${description}` },
-    ]);
+    let analysis: ArchitectureAnalysis | null = null;
+    let lastError: string | null = null;
 
-    const responseText = result.response.text();
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const result = await model.generateContent([
+          { text: SYSTEM_PROMPT },
+          { text: `Analyze this app description and return the JSON:\n\n${description}` },
+        ]);
 
-    // Parse the JSON from the response (handle potential markdown fences)
-    let jsonText = responseText.trim();
-    if (jsonText.startsWith("```")) {
-      jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+        const responseText = result.response.text();
+        analysis = parseGeminiResponse(responseText);
+
+        if (analysis) {
+          break; // success
+        }
+
+        lastError = "AI returned malformed JSON";
+        // On retry, add a stronger instruction
+        if (attempt < MAX_RETRIES) {
+          await new Promise((r) => setTimeout(r, 500 * attempt)); // backoff
+        }
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : "Unknown error";
+        if (attempt < MAX_RETRIES) {
+          await new Promise((r) => setTimeout(r, 500 * attempt));
+        }
+      }
     }
 
-    let analysis: ArchitectureAnalysis;
-    try {
-      analysis = JSON.parse(jsonText);
-    } catch {
+    if (!analysis) {
       return NextResponse.json(
-        { error: "Failed to parse AI response. Please try again." },
-        { status: 500 }
-      );
-    }
-
-    // Validate the response has the expected structure
-    if (!analysis.services || !Array.isArray(analysis.services) || analysis.services.length === 0) {
-      return NextResponse.json(
-        { error: "AI response was missing required service data. Please try again." },
+        { error: `Analysis failed after ${MAX_RETRIES} attempts: ${lastError}. Please try again.` },
         { status: 500 }
       );
     }

@@ -49,7 +49,7 @@ function computeServiceCost(
   const totalUsage = usageEstimate.perUserPerMonth * userCount;
 
   // Flat-rate services (hosting, database)
-  if (pricing.flatRate !== undefined && pricing.flatRate !== null) {
+  if (pricing.flatRate !== null) {
     return {
       total: pricing.flatRate,
       breakdown: [{ label: "Flat monthly rate", value: pricing.flatRate }],
@@ -57,18 +57,20 @@ function computeServiceCost(
   }
 
   // AI models (input + output rates per 1M tokens)
-  if (pricing.inputRate !== undefined && pricing.outputRate !== undefined) {
+  if (pricing.inputRate !== null && pricing.outputRate !== null) {
+    const inputRate = pricing.inputRate;
+    const outputRate = pricing.outputRate;
     const inputTokens = totalUsage * 0.6;
     const outputTokens = totalUsage * 0.4;
-    const inputCost = (inputTokens / 1_000_000) * pricing.inputRate;
-    const outputCost = (outputTokens / 1_000_000) * pricing.outputRate;
+    const inputCost = (inputTokens / 1_000_000) * inputRate;
+    const outputCost = (outputTokens / 1_000_000) * outputRate;
     const grossTotal = inputCost + outputCost;
 
     const freeTierDiscount =
-      pricing.freeTier !== undefined && pricing.freeTier !== null
+      pricing.freeTier !== null
         ? Math.min(
             grossTotal,
-            (pricing.freeTier / 1_000_000) * (pricing.inputRate + pricing.outputRate)
+            (pricing.freeTier / 1_000_000) * (inputRate + outputRate)
           )
         : 0;
 
@@ -88,7 +90,7 @@ function computeServiceCost(
   const rate = pricing.inputRate ?? 0;
   const grossCost = totalUsage * rate;
   const freeTierDiscount =
-    pricing.freeTier !== undefined && pricing.freeTier !== null
+    pricing.freeTier !== null
       ? Math.min(grossCost, pricing.freeTier * rate)
       : 0;
 
