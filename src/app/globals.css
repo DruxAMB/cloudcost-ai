@@ -39,82 +39,105 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-4xl: 28px;
 }
 
+/*
+ * Mercury — "Alpine banking at blue hour"
+ * Adapted from a published design system (styles.refero.design/style/3172cd4d)
+ * Font substituted: Inter for arcadia (arcadia is custom/commercial)
+ * Accent shifted slightly from #5266eb to #5b6ff0 for distinctiveness
+ *
+ * Do/Don't guidelines (from source):
+ * DO: Use cobalt exclusively for the single primary action per page
+ * DO: Set cards to graphite with 12px radius and 32px padding — rely on value lift, not shadows
+ * DO: Use intermediate weight (500) for headings — never bold
+ * DO: Use 32px pill radius for interactive controls (buttons, inputs)
+ * DO: Maintain 72px vertical rhythm between major sections
+ * DO: Use ivory on ghost/outline buttons for both border and text
+ * DON'T: Use multiple bright accent colors — cobalt is the only chromatic note
+ * DON'T: Add drop shadows — separation comes from graphite-on-onyx value difference
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Neutrals — Mercury's alpine banking palette */
+  --background: #171721;          /* Onyx Canvas — page background */
+  --foreground: #ededf3;          /* Ivory Text — primary text */
+  --card: #1e1e2a;                /* Graphite Card — elevated surfaces */
+  --card-foreground: #ededf3;     /* Ivory on graphite */
+  --popover: #1e1e2a;             /* Graphite for popovers */
+  --popover-foreground: #ededf3;
+  --primary: #5b6ff0;             /* Cobalt (shifted from #5266eb) — single accent */
+  --primary-foreground: #ffffff;  /* Pure white on cobalt */
+  --secondary: #272735;           /* Obsidian Button — secondary surfaces */
+  --secondary-foreground: #ededf3;
+  --muted: #272735;               /* Obsidian for muted surfaces */
+  --muted-foreground: #c3c3cc;    /* Ash Text — muted body copy */
+  --accent: #272735;              /* Obsidian for accent surfaces */
+  --accent-foreground: #ededf3;
+  --destructive: #e5484d;         /* Red for errors — used sparingly */
+  --border: #2d2d3d;              /* Slightly lighter than canvas for subtle borders */
+  --input: #3a3a4d;               /* Lighter for input borders */
+  --ring: #5b6ff0;                /* Cobalt for focus rings */
+
+  /* Chart colors — monochromatic cobalt variations (Mercury discipline) */
+  --chart-1: #5b6ff0;             /* Cobalt — primary (AI services) */
+  --chart-2: #7c8ff5;             /* Lighter cobalt (payments) */
+  --chart-3: #4454cc;             /* Darker cobalt (communication) */
+  --chart-4: #c3c3cc;             /* Ash (storage) */
+  --chart-5: #70707d;             /* Slate (hosting/other) */
+
+  --radius: 12px;                 /* Card radius — Mercury's signature */
+
+  /* Sidebar (not used but required by shadcn) */
+  --sidebar: #1e1e2a;
+  --sidebar-foreground: #ededf3;
+  --sidebar-primary: #5b6ff0;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #272735;
+  --sidebar-accent-foreground: #ededf3;
+  --sidebar-border: #2d2d3d;
+  --sidebar-ring: #5b6ff0;
 }
 
+/* Dark class mirrors :root since we force dark mode */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #171721;
+  --foreground: #ededf3;
+  --card: #1e1e2a;
+  --card-foreground: #ededf3;
+  --popover: #1e1e2a;
+  --popover-foreground: #ededf3;
+  --primary: #5b6ff0;
+  --primary-foreground: #ffffff;
+  --secondary: #272735;
+  --secondary-foreground: #ededf3;
+  --muted: #272735;
+  --muted-foreground: #c3c3cc;
+  --accent: #272735;
+  --accent-foreground: #ededf3;
+  --destructive: #e5484d;
+  --border: #2d2d3d;
+  --input: #3a3a4d;
+  --ring: #5b6ff0;
+  --chart-1: #5b6ff0;
+  --chart-2: #7c8ff5;
+  --chart-3: #4454cc;
+  --chart-4: #c3c3cc;
+  --chart-5: #70707d;
+  --sidebar: #1e1e2a;
+  --sidebar-foreground: #ededf3;
+  --sidebar-primary: #5b6ff0;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #272735;
+  --sidebar-accent-foreground: #ededf3;
+  --sidebar-border: #2d2d3d;
+  --sidebar-ring: #5b6ff0;
 }
 
 @layer base {
@@ -123,8 +146,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: 'tnum' on, 'ss01' on;
   }
   html {
     @apply font-sans;
+    color-scheme: dark;
   }
 }

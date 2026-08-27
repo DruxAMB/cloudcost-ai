@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+// Guard plugin registration for SSR — ScrollTrigger touches window on register
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(useGSAP);
+}
 import {
   Sparkles,
   ArrowRight,
@@ -249,30 +256,53 @@ ${formatCurrency(totalSavings)}/month
 
   const isLoading = state === "analyzing" || state === "projecting" || state === "optimizing";
 
+  const heroRef = useRef<HTMLElement>(null);
+
+  // GSAP staggered hero reveal — documented recipe (gsap.from with stagger)
+  // Only runs on mount, only on the landing hero, honors prefers-reduced-motion
+  useGSAP(
+    () => {
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReduced) return;
+
+      gsap.from("[data-hero-element]", {
+        opacity: 0,
+        y: 24,
+        duration: 0.6,
+        ease: "power2.out",
+        stagger: 0.08,
+      });
+    },
+    { scope: heroRef }
+  );
+
   return (
     <main className="flex-1 flex flex-col" aria-live="polite" aria-atomic="false">
       {/* Hero / Landing section — only visible when idle */}
       {state === "idle" && (
-        <section className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:py-24 max-w-4xl mx-auto w-full">
-          <div className="flex items-center gap-2 mb-6">
+        <section
+          ref={heroRef}
+          className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:py-24 max-w-4xl mx-auto w-full"
+        >
+          <div className="flex items-center gap-2 mb-6" data-hero-element>
             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground">
               <Cloud className="w-5 h-5" aria-hidden="true" />
             </div>
             <span className="text-xl font-semibold tracking-tight">CloudCost AI</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-4">
+          <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-center mb-4" data-hero-element>
             Describe your app.
             <br />
             <span className="text-muted-foreground">Predict your API costs.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-muted-foreground text-center mb-8 max-w-2xl">
+          <p className="text-lg md:text-xl text-muted-foreground text-center mb-8 max-w-2xl" data-hero-element>
             AI reasons about your full API stack — cloud, AI tokens, payments, email, and more —
             and shows your costs at 1K, 10K, and 100K users. Before you deploy.
           </p>
 
-          <div className="w-full max-w-2xl">
+          <div className="w-full max-w-2xl" data-hero-element>
             <label htmlFor="app-description" className="block text-sm font-medium mb-2">
               Describe your app in plain English
             </label>
@@ -295,7 +325,7 @@ ${formatCurrency(totalSavings)}/month
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 w-full max-w-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 w-full max-w-3xl" data-hero-element>
             <div className="flex flex-col items-center text-center p-4">
               <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted mb-3">
                 <Sparkles className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
