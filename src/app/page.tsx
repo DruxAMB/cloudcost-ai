@@ -4,10 +4,12 @@ import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { SplitText } from "gsap/SplitText";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Guard plugin registration for SSR — ScrollTrigger touches window on register
+// Guard plugin registration for SSR — these plugins touch window on register
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(useGSAP);
+  gsap.registerPlugin(useGSAP, SplitText, ScrollTrigger);
 }
 import {
   Sparkles,
@@ -258,19 +260,79 @@ ${formatCurrency(totalSavings)}/month
 
   const heroRef = useRef<HTMLElement>(null);
 
-  // GSAP staggered hero reveal — documented recipe (gsap.from with stagger)
-  // Only runs on mount, only on the landing hero, honors prefers-reduced-motion
+  // ── Hero moment (composed): SplitText word reveal + radial glow + staggered entrance
+  // ── Secondary moment: ScrollTrigger batch reveal on how-it-works steps
+  // All documented recipes (gsap.from, SplitText, ScrollTrigger.batch) — nothing hand-keyframed.
+  // Honors prefers-reduced-motion: animation skipped entirely, content visible immediately.
   useGSAP(
     () => {
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (prefersReduced) return;
 
+      // --- Hero moment: radial cobalt glow breathes in behind the hero ---
+      const glowTl = gsap.timeline();
+      glowTl.fromTo(
+        "[data-hero-glow]",
+        { opacity: 0, scale: 0.8 },
+        { opacity: 0.15, scale: 1, duration: 1.4, ease: "power2.out" }
+      );
+      // Subtle breathing loop after initial fade-in
+      glowTl.to("[data-hero-glow]", {
+        opacity: 0.10,
+        duration: 3,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
+
+      // --- Hero moment: SplitText per-word 3D reveal on the headline ---
+      const h1 = heroRef.current?.querySelector("[data-hero-headline]");
+      if (h1) {
+        const split = new SplitText(h1, { type: "words", mask: "words" });
+        const tl = gsap.timeline({ delay: 0.15 });
+        tl.from(split.words, {
+          opacity: 0,
+          y: 40,
+          rotateX: -60,
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.06,
+        });
+        // Cobalt gradient sweep across the second line after words reveal
+        tl.fromTo(
+          "[data-hero-headline] .text-muted-foreground",
+          { backgroundImage: "linear-gradient(90deg, #5b6ff0, #5b6ff0)" },
+          {
+            backgroundImage: "linear-gradient(90deg, #c3c3cc, #5b6ff0)",
+            duration: 1.2,
+            ease: "power2.inOut",
+          },
+          "-=0.3"
+        );
+      }
+
+      // --- Hero moment: remaining elements stagger in after the headline ---
       gsap.from("[data-hero-element]", {
         opacity: 0,
         y: 24,
         duration: 0.6,
         ease: "power2.out",
-        stagger: 0.08,
+        stagger: 0.1,
+        delay: 0.4,
+      });
+
+      // --- Secondary moment: ScrollTrigger batch reveal on how-it-works steps ---
+      ScrollTrigger.batch("[data-step-card]", {
+        start: "top 85%",
+        onEnter: (batch) =>
+          gsap.from(batch, {
+            opacity: 0,
+            y: 50,
+            scale: 0.95,
+            duration: 0.6,
+            ease: "power2.out",
+            stagger: 0.15,
+          }),
       });
     },
     { scope: heroRef }
@@ -282,76 +344,109 @@ ${formatCurrency(totalSavings)}/month
       {state === "idle" && (
         <section
           ref={heroRef}
-          className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:py-24 max-w-4xl mx-auto w-full"
+          className="relative flex-1 flex flex-col items-center justify-center px-4 py-16 md:py-24 max-w-4xl mx-auto w-full"
         >
-          <div className="flex items-center gap-2 mb-6" data-hero-element>
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground">
-              <Cloud className="w-5 h-5" aria-hidden="true" />
-            </div>
-            <span className="text-xl font-semibold tracking-tight">CloudCost AI</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-center mb-4" data-hero-element>
-            Describe your app.
-            <br />
-            <span className="text-muted-foreground">Predict your API costs.</span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-muted-foreground text-center mb-8 max-w-2xl" data-hero-element>
-            AI reasons about your full API stack — cloud, AI tokens, payments, email, and more —
-            and shows your costs at 1K, 10K, and 100K users. Before you deploy.
-          </p>
-
-          <div className="w-full max-w-2xl" data-hero-element>
-            <label htmlFor="app-description" className="block text-sm font-medium mb-2">
-              Describe your app in plain English
-            </label>
-            <textarea
-              id="app-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. A SaaS app where users upload documents, chat with AI about them, and pay for premium features"
-              className="w-full min-h-[120px] rounded-lg border border-input bg-background px-4 py-3 text-base resize-y focus:outline-none focus:ring-2 focus:ring-ring"
-              rows={4}
+          {/* Radial cobalt glow behind hero — atmospheric depth (Mercury: no shadows, glow instead) */}
+          <div
+            data-hero-glow
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+          >
+            <div
+              className="w-[600px] h-[600px] rounded-full blur-3xl"
+              style={{ background: "radial-gradient(circle, #5b6ff0 0%, transparent 70%)" }}
             />
-            <Button
-              onClick={handleAnalyze}
-              size="lg"
-              className="w-full mt-4 h-12 text-base"
-              disabled={!description.trim()}
-            >
-              <Sparkles className="w-5 h-5 mr-2" aria-hidden="true" />
-              Analyze architecture
-            </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 w-full max-w-3xl" data-hero-element>
-            <div className="flex flex-col items-center text-center p-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted mb-3">
-                <Sparkles className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+          {/* Dot grid texture — static, adds depth without animation */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ededf3 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
+          />
+
+          {/* Content sits above the glow and grid */}
+          <div className="relative z-10 flex flex-col items-center w-full">
+            <div className="flex items-center gap-2 mb-6" data-hero-element>
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground">
+                <Cloud className="w-5 h-5" aria-hidden="true" />
               </div>
-              <h3 className="font-medium text-sm mb-1">1. Describe</h3>
-              <p className="text-sm text-muted-foreground">
-                Plain English — no architecture diagrams needed
-              </p>
+              <span className="text-xl font-semibold tracking-tight">CloudCost AI</span>
             </div>
-            <div className="flex flex-col items-center text-center p-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted mb-3">
-                <Server className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
-              </div>
-              <h3 className="font-medium text-sm mb-1">2. Reason</h3>
-              <p className="text-sm text-muted-foreground">
-                AI identifies your API stack and usage patterns
-              </p>
+
+            <h1
+              data-hero-headline
+              className="text-4xl md:text-5xl font-medium tracking-tight text-center mb-4 [perspective:800px]"
+            >
+              Describe your app.
+              <br />
+              <span
+                className="text-muted-foreground bg-clip-text text-transparent"
+                style={{ backgroundImage: "linear-gradient(90deg, #c3c3cc, #5b6ff0)" }}
+              >
+                Predict your API costs.
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-muted-foreground text-center mb-8 max-w-2xl" data-hero-element>
+              AI reasons about your full API stack — cloud, AI tokens, payments, email, and more —
+              and shows your costs at 1K, 10K, and 100K users. Before you deploy.
+            </p>
+
+            <div className="w-full max-w-2xl" data-hero-element>
+              <label htmlFor="app-description" className="block text-sm font-medium mb-2">
+                Describe your app in plain English
+              </label>
+              <textarea
+                id="app-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="e.g. A SaaS app where users upload documents, chat with AI about them, and pay for premium features"
+                className="w-full min-h-[120px] rounded-lg border border-input bg-background px-4 py-3 text-base resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+                rows={4}
+              />
+              <Button
+                onClick={handleAnalyze}
+                size="lg"
+                className="w-full mt-4 h-12 text-base"
+                disabled={!description.trim()}
+              >
+                <Sparkles className="w-5 h-5 mr-2" aria-hidden="true" />
+                Analyze architecture
+              </Button>
             </div>
-            <div className="flex flex-col items-center text-center p-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted mb-3">
-                <DollarSign className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 w-full max-w-3xl">
+              <div className="flex flex-col items-center text-center p-4" data-step-card>
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted mb-3">
+                  <Sparkles className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <h3 className="font-medium text-sm mb-1">1. Describe</h3>
+                <p className="text-sm text-muted-foreground">
+                  Plain English — no architecture diagrams needed
+                </p>
               </div>
-              <h3 className="font-medium text-sm mb-1">3. Predict</h3>
-              <p className="text-sm text-muted-foreground">
-                See costs at scale and cut your bill before deploying
-              </p>
+              <div className="flex flex-col items-center text-center p-4" data-step-card>
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted mb-3">
+                  <Server className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <h3 className="font-medium text-sm mb-1">2. Reason</h3>
+                <p className="text-sm text-muted-foreground">
+                  AI identifies your API stack and usage patterns
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center p-4" data-step-card>
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted mb-3">
+                  <DollarSign className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <h3 className="font-medium text-sm mb-1">3. Predict</h3>
+                <p className="text-sm text-muted-foreground">
+                  See costs at scale and cut your bill before deploying
+                </p>
+              </div>
             </div>
           </div>
         </section>
