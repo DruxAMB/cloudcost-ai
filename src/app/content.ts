@@ -34,7 +34,7 @@ export const links = {
   demo: "#app",
   repo: "https://github.com/druxamb/cloudcost-ai",
   video: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  docs: "https://devpost.com/software/cloudcost-ai",
+  docs: "https://cloudcost-ai.druxamb.dev/",
 };
 
 export const demoVideoId = "dQw4w9WgXcQ";
