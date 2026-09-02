@@ -401,7 +401,7 @@ ${formatCurrency(totalSavings)}/month
   return (
     <div className="flex h-full w-full max-w-5xl mx-auto px-4 py-12 md:py-16 flex-col bg-background text-foreground">
       {/* Tool top bar: back to landing + title */}
-      <div className="flex h-[56px] shrink-0 items-center justify-between border-b border-border px-4 md:px-6">
+      <div className="flex h-[56px] shrink-0 items-center justify-between border-b border-white/10 px-4 md:px-6">
         <Button variant="ghost" size="sm" onClick={onExit} className="gap-2">
           <ArrowLeft className="w-4 h-4" aria-hidden="true" />
           Back to landing
@@ -450,7 +450,7 @@ ${formatCurrency(totalSavings)}/month
               }}
             >
               <div
-                className="bg-background rounded-2xl border border-input p-4"
+                className="bg-background rounded-[16px] border border-white/10 p-4"
                 style={{
                   boxShadow:
                     "0 0 0 1px rgba(4,23,43,0.04), 0 12px 24px -8px rgba(0,0,0,0.08), 0 4px 8px -4px rgba(0,0,0,0.06)",
@@ -468,14 +468,14 @@ ${formatCurrency(totalSavings)}/month
                   rows={3}
                 />
                 {/* Composer footer: hint + pill action */}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/60">
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
                   <span className="text-xs text-muted-foreground hidden sm:block">
                     e.g. A SaaS app with document upload, AI chat, and payments
                   </span>
                   <Button
                     type="submit"
                     size="sm"
-                    className="rounded-full h-9 px-5 ml-auto shrink-0"
+                    className="h-9 px-5 ml-auto shrink-0"
                     disabled={!description.trim()}
                   >
                     Analyze
@@ -504,7 +504,7 @@ ${formatCurrency(totalSavings)}/month
               Something went wrong while analyzing your app. This is usually a temporary issue with
               the AI service. Please try again.
             </p>
-            <Button onClick={handleReset} variant="outline" className="rounded-full">
+            <Button onClick={handleReset} variant="outline">
               <RotateCcw className="w-4 h-4 mr-2" aria-hidden="true" />
               Try again
             </Button>
@@ -588,15 +588,15 @@ function LoadingState({ state }: { state: AnalysisState }) {
       {/* Skeleton preview: matches the results layout shape */}
       <div className="space-y-6" aria-hidden="true">
         {/* Summary skeleton */}
-        <Skeleton className="h-28 rounded-2xl w-full" />
+        <Skeleton className="h-28 rounded-[16px] w-full" />
         {/* Service cards skeleton */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 rounded-2xl" />
+            <Skeleton key={i} className="h-32 rounded-[16px]" />
           ))}
         </div>
         {/* Chart skeleton */}
-        <Skeleton className="h-80 rounded-2xl w-full" />
+        <Skeleton className="h-80 rounded-[16px] w-full" />
       </div>
     </section>
   );
@@ -706,7 +706,6 @@ function ResultsView({
           <Button
             onClick={onGenerateReport}
             size="sm"
-            className="rounded-full"
             disabled={reportLoading}
           >
             {reportLoading ? (
@@ -717,7 +716,7 @@ function ResultsView({
             {reportLoading ? "Generating…" : "PDF report"}
           </Button>
           {reportData && (
-            <Button onClick={onDownloadPDF} size="sm" variant="outline" className="rounded-full">
+            <Button onClick={onDownloadPDF} size="sm" variant="outline">
               <Download className="w-4 h-4 mr-1.5" aria-hidden="true" />
               Download
             </Button>
@@ -726,7 +725,6 @@ function ResultsView({
             onClick={onDoctavianGenerate}
             size="sm"
             variant="outline"
-            className="rounded-full"
             disabled={doctavianLoading}
           >
             {doctavianLoading ? (
@@ -741,7 +739,7 @@ function ResultsView({
 
       {/* Doctavian result banner: shown after a signed report is sent */}
       {doctavianResult && (
-        <div className="mb-8 p-4 rounded-lg border border-border bg-muted/30">
+        <div className="mb-8 p-4 rounded-[16px] border border-white/10 bg-muted/30">
           <div className="flex items-start gap-3">
             <CheckCircle2 className="w-5 h-5 text-foreground mt-0.5 shrink-0" aria-hidden="true" />
             <div className="flex-1">
@@ -764,7 +762,7 @@ function ResultsView({
       {/* Sign dialog: collects signer details before sending to Doctavian */}
       {showSignDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" role="dialog" aria-modal="true" aria-label="Send cost report for signature">
-          <div className="bg-background rounded-lg border border-border p-6 max-w-md w-full mx-4 shadow-lg">
+          <div className="bg-background rounded-[16px] border border-white/10 p-6 max-w-md w-full mx-4 shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg" style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}>
                 Send for signature
@@ -789,7 +787,7 @@ function ResultsView({
                   value={signerName}
                   onChange={(e) => setSignerName(e.target.value)}
                   placeholder="Jane Doe"
-                  className="w-full px-3 py-2 text-sm rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full px-3 py-2 text-sm rounded-[8px] border border-white/10 bg-background focus:outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
               <div>
@@ -800,7 +798,7 @@ function ResultsView({
                   value={signerEmail}
                   onChange={(e) => setSignerEmail(e.target.value)}
                   placeholder="jane@company.com"
-                  className="w-full px-3 py-2 text-sm rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full px-3 py-2 text-sm rounded-[8px] border border-white/10 bg-background focus:outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
             </div>
@@ -809,7 +807,6 @@ function ResultsView({
                 onClick={() => setShowSignDialog(false)}
                 size="sm"
                 variant="outline"
-                className="rounded-full"
                 disabled={doctavianLoading}
               >
                 Cancel
@@ -817,7 +814,6 @@ function ResultsView({
               <Button
                 onClick={onConfirmSign}
                 size="sm"
-                className="rounded-full"
                 disabled={doctavianLoading || !signerName.trim() || !signerEmail.trim()}
               >
                 {doctavianLoading ? (
@@ -873,9 +869,9 @@ function ResultsView({
           </div>
 
           {/* Extracted fields: hairline rows, no badge chrome */}
-          <div className="space-y-0 mb-6 border-t border-border">
+          <div className="space-y-0 mb-6 border-t border-white/10">
             {reportData.extractedFields.map((field, i) => (
-              <div key={i} className="flex items-center justify-between text-sm py-2.5 border-b border-border">
+              <div key={i} className="flex items-center justify-between text-sm py-2.5 border-b border-white/10">
                 <span className="font-medium">{field.fieldName}</span>
                 <span className="text-muted-foreground truncate mx-4 max-w-[200px]">
                   {field.value.length > 40 ? field.value.substring(0, 40) + "…" : field.value}
@@ -928,7 +924,7 @@ function ResultsView({
             return (
               <div
                 key={service.id}
-                className={`p-5 rounded-2xl bg-muted cursor-pointer transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
+                className={`p-5 rounded-[16px] bg-muted cursor-pointer transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
                   isSelected ? "ring-2 ring-ring" : "hover:bg-muted/70"
                 }`}
                 onClick={() => setSelectedService(isSelected ? null : service.id)}
@@ -946,7 +942,7 @@ function ResultsView({
                 <p className="font-medium text-sm leading-tight mb-0.5">{service.name}</p>
                 <p className="text-xs text-muted-foreground mb-3">{service.provider}</p>
                 <p className="text-sm text-muted-foreground mb-3">{service.role}</p>
-                <div className="flex items-center justify-between pt-3 border-t border-border/60">
+                <div className="flex items-center justify-between pt-3 border-t border-white/10">
                   <span className="text-xs text-muted-foreground tabular-nums">
                     {service.usageEstimate.perUserPerMonth.toLocaleString()} {service.usageEstimate.metric}/user/mo
                   </span>
@@ -964,7 +960,7 @@ function ResultsView({
 
       {/* Selected service drill-down: hairline rows, no card chrome */}
       {selectedServiceData && (
-        <div className="mb-12 p-6 rounded-2xl bg-muted">
+        <div className="mb-12 p-6 rounded-[16px] bg-muted">
           <div className="flex items-center justify-between mb-4">
             <h3
               style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontSize: "1.25rem" }}
@@ -981,7 +977,7 @@ function ResultsView({
           </div>
           <div className="space-y-0">
             {selectedServiceData.breakdown.map((item, i) => (
-              <div key={i} className="flex items-center justify-between py-2.5 border-b border-border/60 last:border-0">
+              <div key={i} className="flex items-center justify-between py-2.5 border-b border-white/10/60 last:border-0">
                 <span className="text-sm text-muted-foreground">{item.label}</span>
                 <span className="text-sm font-medium tabular-nums">
                   {item.value < 0 ? "-" : ""}${Math.abs(item.value).toFixed(2)}
@@ -1061,9 +1057,9 @@ function ResultsView({
         </div>
 
         {/* Breakdown legend: hairline rows */}
-        <div className="space-y-0 border-t border-border">
+        <div className="space-y-0 border-t border-white/10">
           {scale100k?.services.slice(0, 5).map((s) => (
-            <div key={s.serviceId} className="flex items-center gap-3 text-sm py-2.5 border-b border-border last:border-0">
+            <div key={s.serviceId} className="flex items-center gap-3 text-sm py-2.5 border-b border-white/10 last:border-0">
               <div
                 className="w-2.5 h-2.5 rounded-sm shrink-0"
                 style={{ backgroundColor: CATEGORY_COLORS[s.category] }}
@@ -1082,7 +1078,7 @@ function ResultsView({
           peach accent card for savings (the one chromatic surface), neutral cards. */}
       <div aria-live="polite" aria-atomic="true" className="mb-12">
         {optimizeError && (
-          <div className="p-4 rounded-2xl bg-muted mb-6">
+          <div className="p-4 rounded-[16px] bg-muted mb-6">
             <p className="text-sm font-medium mb-1">Optimizations unavailable</p>
             <p className="text-sm text-muted-foreground">{optimizeError}</p>
           </div>
@@ -1101,7 +1097,6 @@ function ResultsView({
               <Button
                 variant={showOptimizations ? "outline" : "default"}
                 size="sm"
-                className="rounded-full"
                 onClick={() => setShowOptimizations(!showOptimizations)}
               >
                 {showOptimizations ? "Hide" : "Show →"}
@@ -1112,7 +1107,7 @@ function ResultsView({
               <>
                 {/* Savings summary: the peach accent card (one chromatic surface per page) */}
                 <div
-                  className="p-6 rounded-2xl mb-6"
+                  className="p-6 rounded-[16px] mb-6"
                   style={{ backgroundColor: "var(--accent)", color: "var(--accent-foreground)" }}
                 >
                   <div className="flex items-center justify-between flex-wrap gap-4">
@@ -1140,7 +1135,7 @@ function ResultsView({
                 {/* Optimization cards: neutral cards, ghost labels, no badges */}
                 <div className="space-y-4">
                   {optimizations.map((opt) => (
-                    <div key={opt.id} className="p-5 rounded-2xl bg-muted">
+                    <div key={opt.id} className="p-5 rounded-[16px] bg-muted">
                       <div className="flex items-start justify-between gap-4 mb-2">
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-muted-foreground mb-1 capitalize">{opt.category} · {opt.effort} effort</p>
