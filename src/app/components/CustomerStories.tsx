@@ -81,10 +81,10 @@ export default function CustomerStories() {
   const move = (d: number) => goTo(i + d);
 
   return (
-    /* Outer wrapper provides scroll distance (500vh = 100vh per story
+    /* Outer wrapper provides scroll distance (600vh = 100vh per story
        transition + 1 viewport for the initial view). Inner section is
        CSS sticky â€” no GSAP pin spacer. */
-    <div ref={sectionRef} style={{ height: "500vh" }}>
+    <div ref={sectionRef} style={{ height: "600vh" }}>
     <section className="sticky top-0 flex min-h-screen items-center bg-ld-dark px-3 py-10 md:px-6 md:py-16">
       <div className="mx-auto max-w-[1400px]">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,240px)_1fr]">
