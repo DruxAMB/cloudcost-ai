@@ -35,6 +35,11 @@ export default function SmoothScroll({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      // Don't intercept wheel/touch events inside the app overlay —
+      // the app has its own scroll container (overflow-y-auto on main).
+      // Without this, lenis.stop() pauses the window but still swallows
+      // wheel events, so the app's inner container never receives them.
+      prevent: (node: HTMLElement) => node.closest(".cc-app") !== null,
     });
     setLenis(instance);
 
