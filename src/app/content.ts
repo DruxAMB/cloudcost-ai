@@ -94,7 +94,7 @@ export const hero = {
  * Sync manually if you retheme globals.css.
  *
  * Story flow (left → right):
- *   cost projection → service mix → deployment → services → architecture → savings
+ *   cost projection → service mix → services identified → savings
  */
 export const heroWidgets: HeroWidgetItem[] = [
   // 1 — Cost projection: the money shot. How monthly cost scales 1K → 100K.
@@ -116,7 +116,7 @@ export const heroWidgets: HeroWidgetItem[] = [
       prefix: "$",
       delay: 700,
       delta: { value: "+294% at 100K" },
-      tabs: ["1K", "10K", "50K", "100K"],
+      tabs: ["1K", "10K", "100K"],
       sparkline: {
         id: "grad-cost-scale",
         color: "#7ffaa8",
@@ -124,7 +124,7 @@ export const heroWidgets: HeroWidgetItem[] = [
         height: 56,
         line: "M0 48 C 45 46, 85 41, 125 34 S 205 19, 245 13 S 285 8, 300 6",
         area: "M0 48 C 45 46, 85 41, 125 34 S 205 19, 245 13 S 285 8, 300 6 L 300 56 L 0 56 Z",
-        xLabels: ["1K", "10K", "50K", "100K"],
+        xLabels: ["1K", "10K", "100K"],
       },
     },
   },
@@ -152,30 +152,14 @@ export const heroWidgets: HeroWidgetItem[] = [
       meta: "by category",
       rows: [
         { label: "AI / LLM API", value: 42, color: "#7ffaa8" },
-        { label: "Compute", value: 28, color: "#377FEA" },
-        { label: "Database", value: 18, color: "#FB3C4F" },
-        { label: "Storage", value: 8, color: "#6937EA" },
-        { label: "Auth & CDN", value: 4, color: "#ebc346" },
+        { label: "Hosting", value: 22, color: "#377FEA" },
+        { label: "Database", value: 16, color: "#FB3C4F" },
+        { label: "Storage", value: 10, color: "#6937EA" },
+        { label: "Payments", value: 10, color: "#ebc346" },
       ],
     },
   },
-  // 4 — Deployment target: which cloud + region the analysis recommends.
-  {
-    className: "mt-10 w-[260px] shrink-0 snap-center sm:w-[300px]",
-    entryX: 0,
-    entryY: 40,
-    floatX: 7,
-    floatY: 8,
-    dir: -1,
-    entryDelay: 0.68,
-    floatDur: 11,
-    widget: {
-      kind: "group-by",
-      label: "Deployment Target",
-      value: "AWS · us-east-1",
-    },
-  },
-  // 5 — Services identified: how many cloud services the AI mapped, by layer.
+  // 4 — Services identified: how many cloud services the AI mapped, by layer.
   {
     className: "w-[320px] shrink-0 snap-center sm:w-[400px]",
     entryX: 0,
@@ -190,9 +174,9 @@ export const heroWidgets: HeroWidgetItem[] = [
       label: "Services Identified",
       meta: "by layer",
       dotColor: "#377FEA",
-      subLabel: "across 4 architecture tiers",
-      chips: ["AI", "Data", "Hosting", "Auth"],
-      value: 12,
+      subLabel: "across 8 service categories",
+      chips: ["AI", "Payments", "Hosting", "Data"],
+      value: 7,
       suffix: "",
       delay: 900,
       bars: {
@@ -210,28 +194,7 @@ export const heroWidgets: HeroWidgetItem[] = [
     entryDelay: 0.86,
     widget: { kind: "icon-tile", palette: "purple" },
   },
-  // 7 — PaaS ratio: managed vs self-hosted — a key cost driver.
-  {
-    className: "w-[290px] shrink-0 snap-center sm:w-[360px]",
-    entryX: 30,
-    entryY: 44,
-    floatX: 8,
-    floatY: 10,
-    dir: -1,
-    entryDelay: 0.92,
-    floatDur: 10.5,
-    widget: {
-      kind: "stat-percent",
-      label: "PaaS vs Self-Managed",
-      value: 73.2,
-      decimals: 1,
-      delay: 800,
-      delta: { value: "+12% vs baseline", positive: true },
-      gradient: { id: "paasArc", from: "#7ffaa8", to: "#377FEA" },
-      xLabels: ["Free", "Pro", "Scale", "Ent"],
-    },
-  },
-  // 8 — Optimization savings: the closer. What the user can save per month.
+  // 7 — Optimization savings: the closer. What the user can save per month.
   {
     className: "mt-8 w-[330px] shrink-0 snap-center sm:w-[420px]",
     entryX: 50,
@@ -250,7 +213,7 @@ export const heroWidgets: HeroWidgetItem[] = [
       prefix: "$",
       delay: 650,
       delta: { value: "-49% of bill", positive: true },
-      tabs: ["Compute", "AI", "Storage", "Network"],
+      tabs: ["Model", "Caching", "Tier", "Arch"],
       sparkline: {
         id: "grad-save",
         color: "#6937EA",
@@ -387,25 +350,11 @@ export const proof: {
   statLabel?: string;
 }[] = [
   {
-    kind: "Output",
-    label: "Real analysis output",
-    headline: "Identified 7 services for a document-chat SaaS app",
-    body: "Gemini identified EC2, RDS, S3, OpenAI API, Stripe, Auth0, and Algolia — each with a provider, category, per-user usage estimate, and role in the architecture. SerpApi verified live pricing for each.",
-  },
-  {
-    kind: "Measured",
-    label: "End-to-end latency",
-    headline: "Analysis completes in under 15 seconds",
-    body: "From form submission to full cost projection with optimization suggestions. Measured on a warm Xano instance with Gemini 2.0 Flash and SerpApi pricing lookups.",
-    statValue: "14.2s",
-    statLabel: "median analysis time",
-  },
-  {
     kind: "Problem",
     label: "Why this matters",
-    headline: "73% of organizations exceeded their cloud budgets in 2024",
-    body: "Cloud cost overruns are the leading cause of startup infrastructure failure. Knowing the cost profile before building is the single highest-leverage decision in cloud architecture.",
-    source: "https://www.flexera.com/blog/cloud/cloud-computing-trends-2024",
+    headline: "Public cloud spend was over budget by an average of 15% in 2024",
+    body: "Managing cloud spending is the top challenge for organizations two years running. Knowing the cost profile before building is the single highest-leverage decision in cloud architecture.",
+    source: "https://www.flexera.com/blog/finops/cloud-computing-trends-flexera-2024-state-of-the-cloud-report/",
   },
 ];
 
@@ -421,7 +370,7 @@ export const resources = [
     tag: "Signature",
     title: "Doctavian API Reference",
     desc: "The signature and document generation API we integrated for e-signature workflows.",
-    href: "https://developers.doctavian.com",
+    href: "https://developers.doctavian.com/en/get-started",
   },
   {
     tag: "PDF",
