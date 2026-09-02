@@ -350,6 +350,20 @@ export const proof: {
   statLabel?: string;
 }[] = [
   {
+    kind: "Output",
+    label: "Real analysis output",
+    headline: "5 services identified with live SerpApi pricing",
+    body: "Gemini identified Vercel, AWS S3, Gemini Pro, Supabase, and Stripe for a document-chat SaaS app — each with a provider, category, per-user usage estimate, and role. SerpApi verified live pricing for each service.",
+  },
+  {
+    kind: "Measured",
+    label: "End-to-end latency",
+    headline: "Analysis completes in under 40 seconds",
+    body: "From form submission to full cost projection with optimization suggestions. Measured on a warm instance with Gemini and live SerpApi pricing lookups.",
+    statValue: "39.1s",
+    statLabel: "measured analysis time",
+  },
+  {
     kind: "Problem",
     label: "Why this matters",
     headline: "Public cloud spend was over budget by an average of 15% in 2024",
