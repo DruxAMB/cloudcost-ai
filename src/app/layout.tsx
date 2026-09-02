@@ -1,43 +1,44 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import CurtainLoader from "./components/CurtainLoader";
+import SmoothScroll from "./components/SmoothScroll";
+import { project } from "./content";
 import "./globals.css";
 
-// Inter is the substitute for Mercury's arcadia (custom/commercial font)
-// Weights: 400 (body) and 500 (display) — Mercury's signature intermediate weight
-const inter = Inter({
-  variable: "--font-sans",
+const mono = JetBrains_Mono({
+  variable: "--font-ld-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "CloudCost AI — Predict your API costs before you build",
-  description:
-    "Describe your app in plain English. AI reasons about your full API stack and predicts your costs at 1k, 10k, and 100k users — then suggests optimizations to cut your bill.",
+  title: project.title,
+  description: project.description,
   openGraph: {
-    title: "CloudCost AI — Predict your API costs before you build",
-    description:
-      "Describe your app. See your full API stack cost at scale. Cut your bill before you deploy.",
+    title: project.title,
+    description: project.description,
     type: "website",
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`dark ${inter.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
-        {children}
-        <Toaster richColors position="bottom-right" theme="dark" />
+    <html lang="en" className={`${mono.variable} h-full antialiased`}>
+      <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap"
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-ld-dark text-ink">
+        <CurtainLoader />
+        <SmoothScroll>{children}</SmoothScroll>
+        <Toaster />
       </body>
     </html>
   );

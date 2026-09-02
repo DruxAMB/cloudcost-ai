@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { ArchitectureAnalysis, ApiService } from "@/lib/types";
+import { fetchLivePricingData, buildDynamicPricingPrompt } from "@/lib/serpapi-pricing";
 
 export const runtime = "nodejs";
 
-const SYSTEM_PROMPT = `You are CloudCost AI, an expert cloud architect and FinOps consultant. Your job is to analyze a natural-language app description and determine which API services the app needs, estimate per-user usage patterns, and return a structured JSON response.
+// Fallback prompt if SerpApi is unavailable: uses static pricing data
+const FALLBACK_PROMPT = `You are CloudCost AI, an expert cloud architect and FinOps consultant. Your job is to analyze a natural-language app description and determine which API services the app needs, estimate per-user usage patterns, and return a structured JSON response.
 
 For each service, you must:
 1. Identify the specific API/service (e.g. "Gemini AI", "Stripe", "SendGrid", "AWS S3", "Vercel")
@@ -54,7 +56,7 @@ Return JSON in EXACTLY this format:
   ]
 }
 
-PRICING FIELD RULES (critical — the cost engine depends on these):
+PRICING FIELD RULES (critical: the cost engine depends on these):
 - "flatRate": Use ONLY for services with a fixed monthly cost regardless of usage.
   Examples: Vercel ($20/mo), Supabase ($25/mo). Set inputRate and outputRate to null.
 - "inputRate" + "outputRate": Use ONLY for AI models with per-1M-token pricing.
@@ -87,7 +89,7 @@ function parseGeminiResponse(text: string): ArchitectureAnalysis | null {
   if (jsonText.startsWith("```")) {
     jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
   }
-  // Also handle cases where JSON is embedded in prose — extract the first { ... } block
+  // Also handle cases where JSON is embedded in prose: extract the first { ... } block
   const jsonStart = jsonText.indexOf("{");
   const jsonEnd = jsonText.lastIndexOf("}");
   if (jsonStart >= 0 && jsonEnd > jsonStart) {
@@ -136,6 +138,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "GEMINI_API_KEY is not configured" }, { status: 500 });
     }
 
+    // Step 1: Fetch real-time pricing data via SerpApi
+    // This is the sponsor integration: AI + live search data
+    const serpApiKey = process.env.SERPAPI_API_KEY;
+    let systemPrompt = FALLBACK_PROMPT;
+    let pricingSource = "static (fallback)";
+
+    if (serpApiKey) {
+      try {
+        const { pricingContext, errors } = await fetchLivePricingData(serpApiKey);
+        if (pricingContext.length > 100) {
+          systemPrompt = buildDynamicPricingPrompt(pricingContext);
+          pricingSource = `live (SerpApi)${errors.length > 0 ? ` with ${errors.length} errors` : ""}`;
+        }
+      } catch (err) {
+        console.error("SerpApi pricing fetch failed, using fallback:", err);
+      }
+    }
+
+    // Step 2: Call Gemini with the (dynamic or fallback) pricing data
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
@@ -145,7 +166,7 @@ export async function POST(request: NextRequest) {
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
         const result = await model.generateContent([
-          { text: SYSTEM_PROMPT },
+          { text: systemPrompt },
           { text: `Analyze this app description and return the JSON:\n\n${description}` },
         ]);
 
@@ -157,9 +178,8 @@ export async function POST(request: NextRequest) {
         }
 
         lastError = "AI returned malformed JSON";
-        // On retry, add a stronger instruction
         if (attempt < MAX_RETRIES) {
-          await new Promise((r) => setTimeout(r, 500 * attempt)); // backoff
+          await new Promise((r) => setTimeout(r, 500 * attempt));
         }
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
@@ -175,6 +195,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Attach pricing source metadata
+    (analysis as ArchitectureAnalysis & { pricingSource: string }).pricingSource = pricingSource;
 
     return NextResponse.json(analysis);
   } catch (error) {

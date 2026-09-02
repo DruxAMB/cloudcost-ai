@@ -41,7 +41,7 @@ Return JSON in EXACTLY this format:
 
 Rules:
 - Suggest 3-5 optimizations, ordered by savings amount (highest first)
-- Be realistic about savings — don't claim 90% from a single change
+- Be realistic about savings: don't claim 90% from a single change
 - The total savings should be achievable, not theoretical maximums
 - Return ONLY the JSON, no markdown formatting, no code fences`;
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const scale100k = projection.scales.find((s) => s.users === 100000) ?? projection.scales[projection.scales.length - 1];
 
     const costContext = scale100k.services
-      .map((s) => `- ${s.serviceName}: ${s.category} — $${s.monthlyCost.toFixed(2)}/mo (${s.percentage.toFixed(1)}% of total)`)
+      .map((s) => `- ${s.serviceName}: ${s.category}: $${s.monthlyCost.toFixed(2)}/mo (${s.percentage.toFixed(1)}% of total)`)
       .join("\n");
 
     const prompt = `App description: ${appDescription}

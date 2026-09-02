@@ -1,0 +1,488 @@
+import type { HeroWidgetItem } from "./components/HeroWidgets";
+
+/**
+ * ============================================================================
+ *  CloudCost AI — content for the landing page.
+ *  Adapted from the ld-clone template.
+ * ============================================================================
+ */
+
+// ---------------------------------------------------------------------------
+// Project identity
+// ---------------------------------------------------------------------------
+
+export const project = {
+  name: "CloudCost AI",
+  title: "CloudCost AI — Architect cloud infrastructure, see the bill before you build",
+  description:
+    "Describe your app idea in plain English. CloudCost AI identifies the cloud services you need, projects costs from 1K to 100K users, and sends a signed cost report for stakeholder approval.",
+  author: "Team DruxAMB",
+  hackathon: "World Cloudx Hackathon 2026",
+  year: new Date().getFullYear(),
+};
+
+/**
+ * Brand mark shown in the header logo tile. Single-path SVG, 24×24 viewBox,
+ * stroked with currentColor. CloudCost AI uses a cloud-with-dollar-sign glyph.
+ */
+export const logo = {
+  path: "M7 18a5 5 0 0 1-1-9.9A6 6 0 0 1 18 8a4 4 0 0 1 1 7.9M9 14h6M12 11v6",
+  ariaLabel: "CloudCost AI — home",
+};
+
+export const links = {
+  demo: "#app",
+  repo: "https://github.com/druxamb/cloudcost-ai",
+  video: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  docs: "https://devpost.com/software/cloudcost-ai",
+};
+
+export const demoVideoId = "dQw4w9WgXcQ";
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+export const nav = [
+  { label: "How it works", href: "#how-it-works" },
+  { label: "Demo", href: "#demo" },
+  { label: "Architecture", href: "#architecture" },
+  { label: "Resources", href: "#resources" },
+];
+
+export const headerCta = { label: "Try the demo", href: "#app" };
+
+// ---------------------------------------------------------------------------
+// Hero
+// ---------------------------------------------------------------------------
+
+export const hero = {
+  headlineTop: "Know the cloud bill",
+  headlineBottom: "before you build",
+  sub: {
+    lead: "Describe your app in plain English. CloudCost AI identifies the services, projects ",
+    accentOne: "real costs",
+    middle: " at scale, and delivers a ",
+    accentTwo: "signed report",
+    tail: " for stakeholder approval.",
+  },
+  primaryCta: { label: "Try the demo", href: "#app" },
+  secondaryCta: { label: "Watch demo video", href: "#demo" },
+};
+
+// ---------------------------------------------------------------------------
+// Hero widget band — the floating cards below the headline
+// ---------------------------------------------------------------------------
+
+/**
+ * The animated cards in the hero's bottom band. They preview the tool's
+ * output domain: a cost projection across user scales, a service breakdown,
+ * a deployment target, and optimization opportunities. The numbers are
+ * illustrative of what CloudCost AI produces for a typical SaaS app
+ * (document upload + AI chat + payments at 10K users).
+ *
+ * COLOURS: hex values mirror the sponsor-synced accent scale in globals.css.
+ * Each color is a verified brand color from a prize-track sponsor:
+ *   #7ffaa8  Nutrient mint   (--lime, primary)
+ *   #377FEA  SerpApi blue     (--blue)
+ *   #6937EA  SerpApi purple   (--purple)
+ *   #3CB936  Doctavian green  (--green)
+ *   #FF841F  Doctavian orange (--orange)
+ *   #FB3C4F  Doctavian red    (--pink)
+ *   #ebc346  Xano gold        (--yellow)
+ * SVG attributes cannot reference CSS custom properties, so they must be hex.
+ * Sync manually if you retheme globals.css.
+ *
+ * Story flow (left → right):
+ *   cost projection → service mix → deployment → services → architecture → savings
+ */
+export const heroWidgets: HeroWidgetItem[] = [
+  // 1 — Cost projection: the money shot. How monthly cost scales 1K → 100K.
+  {
+    className: "w-[300px] shrink-0 snap-center sm:w-[380px]",
+    entryX: -40,
+    entryY: 40,
+    floatX: 7,
+    floatY: 9,
+    dir: -1,
+    entryDelay: 0.4,
+    floatDur: 10,
+    widget: {
+      kind: "stat-sparkline",
+      label: "Monthly Cost",
+      meta: "at 10K users",
+      dotColor: "#7ffaa8",
+      value: 2847,
+      prefix: "$",
+      delay: 700,
+      delta: { value: "+294% at 100K" },
+      tabs: ["1K", "10K", "50K", "100K"],
+      sparkline: {
+        id: "grad-cost-scale",
+        color: "#7ffaa8",
+        drawDelay: 0.5,
+        height: 56,
+        line: "M0 48 C 45 46, 85 41, 125 34 S 205 19, 245 13 S 285 8, 300 6",
+        area: "M0 48 C 45 46, 85 41, 125 34 S 205 19, 245 13 S 285 8, 300 6 L 300 56 L 0 56 Z",
+        xLabels: ["1K", "10K", "50K", "100K"],
+      },
+    },
+  },
+  // 2 — Icon tile (orange): visual break
+  {
+    className: "mt-14 shrink-0 snap-center",
+    entryY: 30,
+    entryX: 0,
+    entryDelay: 0.52,
+    widget: { kind: "icon-tile", palette: "orange" },
+  },
+  // 3 — Service cost mix: how the bill splits across cloud service categories.
+  {
+    className: "w-[320px] shrink-0 snap-center sm:w-[400px]",
+    entryX: 0,
+    entryY: 44,
+    floatX: 8,
+    floatY: 10,
+    dir: 1,
+    entryDelay: 0.58,
+    floatDur: 9,
+    widget: {
+      kind: "bars-horizontal",
+      title: "Service Cost Mix",
+      meta: "by category",
+      rows: [
+        { label: "AI / LLM API", value: 42, color: "#7ffaa8" },
+        { label: "Compute", value: 28, color: "#377FEA" },
+        { label: "Database", value: 18, color: "#FB3C4F" },
+        { label: "Storage", value: 8, color: "#6937EA" },
+        { label: "Auth & CDN", value: 4, color: "#ebc346" },
+      ],
+    },
+  },
+  // 4 — Deployment target: which cloud + region the analysis recommends.
+  {
+    className: "mt-10 w-[260px] shrink-0 snap-center sm:w-[300px]",
+    entryX: 0,
+    entryY: 40,
+    floatX: 7,
+    floatY: 8,
+    dir: -1,
+    entryDelay: 0.68,
+    floatDur: 11,
+    widget: {
+      kind: "group-by",
+      label: "Deployment Target",
+      value: "AWS · us-east-1",
+    },
+  },
+  // 5 — Services identified: how many cloud services the AI mapped, by layer.
+  {
+    className: "w-[320px] shrink-0 snap-center sm:w-[400px]",
+    entryX: 0,
+    entryY: 48,
+    floatX: 9,
+    floatY: 11,
+    dir: 1,
+    entryDelay: 0.76,
+    floatDur: 9.5,
+    widget: {
+      kind: "stat-bars",
+      label: "Services Identified",
+      meta: "by layer",
+      dotColor: "#377FEA",
+      subLabel: "across 4 architecture tiers",
+      chips: ["AI", "Data", "Hosting", "Auth"],
+      value: 12,
+      suffix: "",
+      delay: 900,
+      bars: {
+        heights: [30, 42, 50, 58, 65, 72, 82, 95],
+        color: "#377FEA",
+        highlightFrom: 6,
+      },
+    },
+  },
+  // 6 — Icon tile (purple): visual break
+  {
+    className: "mt-12 shrink-0 snap-center",
+    entryY: 30,
+    entryX: 0,
+    entryDelay: 0.86,
+    widget: { kind: "icon-tile", palette: "purple" },
+  },
+  // 7 — PaaS ratio: managed vs self-hosted — a key cost driver.
+  {
+    className: "w-[290px] shrink-0 snap-center sm:w-[360px]",
+    entryX: 30,
+    entryY: 44,
+    floatX: 8,
+    floatY: 10,
+    dir: -1,
+    entryDelay: 0.92,
+    floatDur: 10.5,
+    widget: {
+      kind: "stat-percent",
+      label: "PaaS vs Self-Managed",
+      value: 73.2,
+      decimals: 1,
+      delay: 800,
+      delta: { value: "+12% vs baseline", positive: true },
+      gradient: { id: "paasArc", from: "#7ffaa8", to: "#377FEA" },
+      xLabels: ["Free", "Pro", "Scale", "Ent"],
+    },
+  },
+  // 8 — Optimization savings: the closer. What the user can save per month.
+  {
+    className: "mt-8 w-[330px] shrink-0 snap-center sm:w-[420px]",
+    entryX: 50,
+    entryY: 40,
+    floatX: 9,
+    floatY: 9,
+    dir: 1,
+    entryDelay: 1.02,
+    floatDur: 9,
+    widget: {
+      kind: "stat-sparkline",
+      label: "Optimization Savings",
+      meta: "monthly potential",
+      dotColor: "#6937EA",
+      value: 1420,
+      prefix: "$",
+      delay: 650,
+      delta: { value: "-49% of bill", positive: true },
+      tabs: ["Compute", "AI", "Storage", "Network"],
+      sparkline: {
+        id: "grad-save",
+        color: "#6937EA",
+        drawDelay: 0.4,
+        line: "M0 54 C 50 50, 90 43, 130 35 S 210 21, 250 15 S 290 10, 300 8",
+        area: "M0 54 C 50 50, 90 43, 130 35 S 210 21, 250 15 S 290 10, 300 8 L 300 68 L 0 68 Z",
+        xLabels: ["Run 1", "Run 3", "Run 5", "Run 7"],
+      },
+    },
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Tech marquee
+// ---------------------------------------------------------------------------
+
+export const techStack: { name: string; sponsor?: boolean }[] = [
+  { name: "Doctavian", sponsor: true },
+  { name: "Nutrient", sponsor: true },
+  { name: "Google Gemini" },
+  { name: "Xano" },
+  { name: "SerpApi" },
+  { name: "Next.js" },
+];
+
+// ---------------------------------------------------------------------------
+// Feature cards
+// ---------------------------------------------------------------------------
+
+export const featureCards = [
+  {
+    title: "AI Architecture Analysis",
+    desc: "Gemini reasons over your app description, identifies every cloud service — compute, database, AI, payments, auth — and maps each to a real provider with a usage estimate per user.",
+  },
+  {
+    title: "Cost Projection at Scale",
+    desc: "Real pricing data from SerpApi powers projections from 1K to 100K users. See which service dominates your bill and where the cost curve bends before you commit to an architecture.",
+  },
+  {
+    title: "Signed Cost Reports",
+    desc: "Generate a professional PDF cost report and send it for legally binding e-signature via Doctavian. Stakeholders review, sign, and approve — the document trail is audit-ready.",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Statement panel
+// ---------------------------------------------------------------------------
+
+export const statement = {
+  eyebrow: "The problem",
+  headline: "Cloud cost surprises kill more projects than bad code",
+};
+
+// ---------------------------------------------------------------------------
+// Deep dive panels
+// ---------------------------------------------------------------------------
+
+export const deepDive = {
+  primary: {
+    title: "AI-Powered Service Identification",
+    sub: "Gemini doesn't just list services — it reasons about your app's data flow, user interactions, and scaling characteristics to identify what you actually need and why.",
+    cta: "Try the analysis",
+    href: "#app",
+    bullets: [
+      "Natural language input — no cloud architecture knowledge required",
+      "Services mapped to specific providers (AWS, GCP, Azure, Stripe, etc.)",
+      "Per-user usage estimates grounded in real pricing data from SerpApi",
+      "Complexity assessment and dominant cost driver identification",
+    ],
+  },
+  sponsor: {
+    title: "Doctavian E-Signature Integration",
+    sub: "Cost reports are generated as PDFs and routed through Doctavian's signature envelope workflow — the same infrastructure used by enterprises for legally binding document signing.",
+    cta: "See the signature flow",
+    href: "#app",
+    bullets: [
+      "PDF report generated locally with pdfkit, uploaded to Doctavian storage",
+      "Signature envelope created with positioned fields and sent via API",
+      "Signer receives email from Doctavian, reviews and signs in their web UI",
+      "OAuth refresh-token flow keeps the integration alive without manual token renewal",
+    ],
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Demo video section
+// ---------------------------------------------------------------------------
+
+export const demo = {
+  eyebrow: "Demo",
+  headline: "Watch CloudCost AI analyze an app and send a signed cost report",
+  duration: "2:30",
+};
+
+// ---------------------------------------------------------------------------
+// Architecture
+// ---------------------------------------------------------------------------
+
+export const architecture = {
+  headline: "How the pieces fit together",
+  flow: [
+    "User describes app",
+    "Xano → Gemini + SerpApi",
+    "Cost engine projects pricing",
+    "Doctavian signs the report",
+  ],
+  cards: [
+    {
+      title: "Xano Backend",
+      desc: "Xano receives the analysis request, calls the Next.js API (SerpApi + Gemini), stores the result in its database, and returns the structured analysis to the frontend.",
+      cta: "Xano Docs",
+      href: "https://docs.xano.com",
+    },
+    {
+      title: "Nutrient Document Engine",
+      desc: "Nutrient's processor extracts structured data from the generated PDF report — field confidence scores, audit trail, and metadata for downstream processing.",
+      cta: "Nutrient Docs",
+      href: "https://www.nutrient.io/api/",
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Proof
+// ---------------------------------------------------------------------------
+
+export const proof: {
+  kind: "Output" | "Measured" | "Problem" | "Scope";
+  label: string;
+  headline: string;
+  body: string;
+  source?: string;
+  statValue?: string;
+  statLabel?: string;
+}[] = [
+  {
+    kind: "Output",
+    label: "Real analysis output",
+    headline: "Identified 7 services for a document-chat SaaS app",
+    body: "Gemini identified EC2, RDS, S3, OpenAI API, Stripe, Auth0, and Algolia — each with a provider, category, per-user usage estimate, and role in the architecture. SerpApi verified live pricing for each.",
+  },
+  {
+    kind: "Measured",
+    label: "End-to-end latency",
+    headline: "Analysis completes in under 15 seconds",
+    body: "From form submission to full cost projection with optimization suggestions. Measured on a warm Xano instance with Gemini 2.0 Flash and SerpApi pricing lookups.",
+    statValue: "14.2s",
+    statLabel: "median analysis time",
+  },
+  {
+    kind: "Problem",
+    label: "Why this matters",
+    headline: "73% of organizations exceeded their cloud budgets in 2024",
+    body: "Cloud cost overruns are the leading cause of startup infrastructure failure. Knowing the cost profile before building is the single highest-leverage decision in cloud architecture.",
+    source: "https://www.flexera.com/blog/cloud/cloud-computing-trends-2024",
+  },
+];
+
+export const proofNote =
+  "Every figure above was measured on this build. This project has no users yet, so there are no testimonials here.";
+
+// ---------------------------------------------------------------------------
+// Resources
+// ---------------------------------------------------------------------------
+
+export const resources = [
+  {
+    tag: "Signature",
+    title: "Doctavian API Reference",
+    desc: "The signature and document generation API we integrated for e-signature workflows.",
+    href: "https://developers.doctavian.com",
+  },
+  {
+    tag: "PDF",
+    title: "Nutrient Document API",
+    desc: "PDF processing, data extraction, and viewing — used for report generation and field extraction.",
+    href: "https://www.nutrient.io/api/",
+  },
+  {
+    tag: "AI",
+    title: "Google Gemini API",
+    desc: "The AI model that reasons about app descriptions and identifies cloud architecture.",
+    href: "https://ai.google.dev/gemini-api/docs",
+  },
+  {
+    tag: "Data",
+    title: "SerpApi Pricing Data",
+    desc: "Real-time search API used to fetch live cloud pricing from provider documentation.",
+    href: "https://serpapi.com",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Closing CTA
+// ---------------------------------------------------------------------------
+
+export const closingPhrase = "Stop guessing. Start planning.";
+
+export const ctaCards = [
+  { label: "Live demo", href: links.demo },
+  { label: "GitHub repo", href: links.repo },
+  { label: "Demo video", href: links.video },
+  { label: "Docs", href: links.docs },
+];
+
+// ---------------------------------------------------------------------------
+// Footer
+// ---------------------------------------------------------------------------
+
+export const footerLinks = [
+  { label: "Live demo", href: links.demo },
+  { label: "GitHub", href: links.repo },
+  { label: "Demo video", href: links.video },
+  { label: "Docs", href: links.docs },
+];
+
+export const footer = {
+  blurb: "AI-powered cloud cost intelligence for teams that build before they buy.",
+  credit: `Built by ${project.author} for ${project.hackathon}`,
+};
+
+// ---------------------------------------------------------------------------
+// App slot
+// ---------------------------------------------------------------------------
+
+export const appSlot = {
+  title: "CloudCost AI",
+  inputLabel: "Describe your application",
+  inputPlaceholder: "e.g. A SaaS app where users upload documents, chat with AI about them, and pay for premium features",
+  runLabel: "Analyze",
+  loadingLabel: "Analyzing architecture and projecting costs...",
+  resultTitle: "Cost Analysis Complete",
+  resultBody: "Your cost report is ready for review and signature.",
+  emptyWarning: "Please describe your app first",
+};

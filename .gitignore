@@ -42,4 +42,10 @@ yarn-error.log*
 next-env.d.ts
 AGENTS.local.md
 
+# generated Doctavian template (built at runtime)
+/templates/
+
+# MSAL token cache (contains refresh tokens — never commit)
+/.msal-cache/
+
 .vercel

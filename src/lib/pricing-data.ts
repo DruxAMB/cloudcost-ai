@@ -1,6 +1,6 @@
 // Pricing data sourced from public provider pricing pages.
 // All prices are in USD, last verified 2026-08-26.
-// This is a cached snapshot — not a live API call — for demo reliability.
+// This is a cached snapshot, not a live API call, for demo reliability.
 // In production, this would be refreshed periodically from provider APIs.
 
 export const PRICING_SOURCES = {
