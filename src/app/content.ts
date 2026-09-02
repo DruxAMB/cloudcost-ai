@@ -233,9 +233,9 @@ export const heroWidgets: HeroWidgetItem[] = [
 export const techStack: { name: string; sponsor?: boolean }[] = [
   { name: "Doctavian", sponsor: true },
   { name: "Nutrient", sponsor: true },
+  { name: "SerpApi", sponsor: true },
+  { name: "Xano", sponsor: true },
   { name: "Google Gemini" },
-  { name: "Xano" },
-  { name: "SerpApi" },
   { name: "Next.js" },
 ];
 

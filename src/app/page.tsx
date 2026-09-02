@@ -42,6 +42,9 @@ export default async function Home({
             <NumberedCards />
           </div>
         </div>
+        {/* Proof comes before the integration panels — a judge sees what
+            the system actually produced before reading how it was built. */}
+        <CustomerStories />
         {/* Horizontal scroll track: 5 sections become side-by-side panels.
             Vertical scroll drives horizontal movement.
             #demo and #architecture live on panels inside this track —
@@ -55,7 +58,6 @@ export default async function Home({
           <HowItWorks />
           <BuiltForDevelopers />
         </HorizontalScroll>
-        <CustomerStories />
         <div id="resources">
           <Resources />
         </div>
