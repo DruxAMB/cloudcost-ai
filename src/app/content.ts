@@ -340,9 +340,16 @@ export const architecture = {
 // Proof
 // ---------------------------------------------------------------------------
 
+/**
+ * `tech` links each entry to a name from `techStack` — the left-column pill
+ * shows the tech name, creating a visual link between the marquee
+ * ("built with X") and the proof ("here's what we achieved with X").
+ * When `tech` is omitted the pill falls back to `label`.
+ */
 export const proof: {
   kind: "Output" | "Measured" | "Problem" | "Scope";
   label: string;
+  tech?: string;
   headline: string;
   body: string;
   source?: string;
@@ -352,12 +359,14 @@ export const proof: {
   {
     kind: "Output",
     label: "Real analysis output",
+    tech: "SerpApi",
     headline: "5 services identified with live SerpApi pricing",
     body: "Gemini identified Vercel, AWS S3, Gemini Pro, Supabase, and Stripe for a document-chat SaaS app — each with a provider, category, per-user usage estimate, and role. SerpApi verified live pricing for each service.",
   },
   {
     kind: "Measured",
     label: "End-to-end latency",
+    tech: "Google Gemini",
     headline: "Analysis completes in under 40 seconds",
     body: "From form submission to full cost projection with optimization suggestions. Measured on a warm instance with Gemini and live SerpApi pricing lookups.",
     statValue: "39.1s",

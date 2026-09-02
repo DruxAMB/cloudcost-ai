@@ -17,6 +17,12 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
  * real output, measured numbers, cited evidence of the problem, and an
  * honest scope breakdown. See `proof` in content.ts for what belongs here.
  *
+ * The left-column pill shows the tech name (st.tech) when set, linking each
+ * proof entry to a name from techStack — the same names that scroll in the
+ * LogoMarquee above. A judge sees "built with SerpApi" in the marquee, then
+ * "SerpApi" on the proof pill with the result next to it. When tech is
+ * omitted the pill falls back to the entry's label.
+ *
  * Do not reintroduce quotes from people who have not used this. A mock
  * testimonial with a disclaimer underneath is still a mock testimonial â€” the
  * reader takes in the quote and skips the caveat.
@@ -97,7 +103,7 @@ export default function CustomerStories() {
                   {st.kind}
                 </span>
                 <span className={`text-ld-dark whitespace-nowrap ${st.cls}`}>
-                  {st.label}
+                  {st.tech || st.label}
                 </span>
               </button>
             ))}
