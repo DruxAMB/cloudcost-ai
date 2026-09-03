@@ -250,11 +250,19 @@ export const featureCards = [
   },
   {
     title: "Cost Projection at Scale",
-    desc: "Real pricing data from SerpApi powers projections from 1K to 100K users. See which service dominates your bill and where the cost curve bends before you commit to an architecture.",
+    desc: "Real pricing data from SerpApi powers projections from 1K to 10K to 100K users. See which service dominates your bill and where the cost curve bends before you commit to an architecture.",
+  },
+  {
+    title: "Cost Optimization Suggestions",
+    desc: "Gemini analyzes your cost breakdown and recommends specific savings — model downgrades, caching strategies, tier changes — each with an estimated percentage reduction in your monthly bill.",
+  },
+  {
+    title: "PDF Report Generation",
+    desc: "Nutrient's DWS Processor API generates a professional PDF cost report from your analysis, then the Data Extraction API parses it back to verify every field with a confidence score and audit trail.",
   },
   {
     title: "Signed Cost Reports",
-    desc: "Generate a professional PDF cost report and send it for legally binding e-signature via Doctavian. Stakeholders review, sign, and approve — the document trail is audit-ready.",
+    desc: "Send the PDF through Doctavian's e-signature envelope workflow for legally binding stakeholder approval. Signer receives an email, reviews, and signs — the document trail is audit-ready.",
   },
 ];
 

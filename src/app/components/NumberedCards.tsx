@@ -41,18 +41,18 @@ const items: {
   title: string;
   desc: string;
   palette: Palette;
-  overlay: "services" | "projection" | "signature";
+  overlay: "services" | "projection" | "optimization" | "extraction" | "signature";
 }[] = featureCards.map((c, i) => ({
   num: String(i + 1).padStart(2, "0"),
   title: c.title,
   desc: c.desc,
   palette: (["lime", "blue", "orange", "pink", "yellow"] as const)[i % 5],
-  overlay: (["services", "projection", "signature"] as const)[i % 3],
+  overlay: (["services", "projection", "optimization", "extraction", "signature"] as const)[i % 5],
 }));
 
 /** Small dark widget card floated over the gradient art.
  *  Each overlay mirrors a real CloudCost AI output — no fabricated metrics. */
-function Overlay({ kind }: { kind: "services" | "projection" | "signature" }) {
+function Overlay({ kind }: { kind: "services" | "projection" | "optimization" | "extraction" | "signature" }) {
   if (kind === "services") {
     return (
       <div className="w-[248px] rounded-[14px] bg-ld-dark-2/95 p-4 shadow-2xl backdrop-blur">
@@ -96,6 +96,58 @@ function Overlay({ kind }: { kind: "services" | "projection" | "signature" }) {
             <span className="rounded-[6px] bg-white/10 px-2.5 py-1.5 text-white/80">{scale}</span>
             <span className="flex-1 text-right font-mono text-white/70">{cost}</span>
             <span className="rounded-[6px] bg-white/10 px-2 py-1.5 text-white/60">/mo</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (kind === "optimization") {
+    return (
+      <div className="w-[248px] rounded-[14px] bg-ld-dark-2/95 p-4 shadow-2xl backdrop-blur">
+        <div className="mb-3 text-[14px] text-white">Optimization suggestions</div>
+        {[
+          ["Downgrade to Flash", "−42%"],
+          ["Add Redis caching", "−60%"],
+          ["Pooled connections", "−18%"],
+        ].map(([action, saving]) => (
+          <div key={action} className="mb-2 flex items-center justify-between text-[11px] last:mb-0">
+            <span className="font-mono text-white/65">{action}</span>
+            <span
+              className="rounded-[90px] px-2 py-0.5 text-[10px] font-semibold"
+              style={{ backgroundColor: "rgba(127,250,168,0.18)", color: "#7ffaa8" }}
+            >
+              {saving}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (kind === "extraction") {
+    return (
+      <div className="w-[248px] rounded-[14px] bg-ld-dark-2/95 p-4 shadow-2xl backdrop-blur">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-[14px] text-white">Field extraction</span>
+          <span className="rounded-[5px] bg-white/10 px-1.5 py-0.5 font-mono text-[9px] text-white/45">
+            17 fields
+          </span>
+        </div>
+        {[
+          ["Service name", 98],
+          ["Monthly cost", 95],
+          ["Provider", 82],
+          ["Usage estimate", 76],
+        ].map(([label, conf]) => (
+          <div key={label as string} className="mb-2.5 last:mb-0">
+            <div className="mb-1 flex justify-between font-mono text-[10px]">
+              <span className="text-white/55">{label}</span>
+              <span className="text-white/75">{conf}%</span>
+            </div>
+            <div className="h-1 overflow-hidden rounded-[90px] bg-white/10">
+              <div className="h-full rounded-[90px] bg-white" style={{ width: `${conf}%` }} />
+            </div>
           </div>
         ))}
       </div>
