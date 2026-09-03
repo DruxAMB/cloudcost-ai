@@ -199,7 +199,7 @@ export default function HomeClient({
         ref={appRef}
         aria-hidden={!appOpen || undefined}
         inert={!appOpen || undefined}
-        className="fixed inset-0 z-[100] cc-app"
+        className="fixed inset-0 z-[100] cc-app bg-ld-dark"
         style={{
           opacity: appOpen ? 1 : 0,
           pointerEvents: appOpen ? "auto" : "none",
