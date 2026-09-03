@@ -33,11 +33,11 @@ export const logo = {
 export const links = {
   demo: "#app",
   repo: "https://github.com/druxamb/cloudcost-ai",
-  video: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  video: "https://youtu.be/M61v-EC4CnU",
   docs: "https://cloudcost-ai.druxamb.dev/",
 };
 
-export const demoVideoId = "dQw4w9WgXcQ";
+export const demoVideoId = "M61v-EC4CnU";
 
 // ---------------------------------------------------------------------------
 // Header
