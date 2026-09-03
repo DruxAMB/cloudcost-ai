@@ -205,7 +205,7 @@ export default function HomeClient({
           pointerEvents: appOpen ? "auto" : "none",
         }}
       >
-        <AppSlot onExit={closeApp} />
+        <AppSlot onExit={closeApp} appOpen={appOpen} />
       </div>
     </>
   );

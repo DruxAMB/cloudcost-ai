@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { xanoAnalyze } from "@/lib/xano-client";
 import {
@@ -82,7 +82,8 @@ const CATEGORY_ICONS: Record<string, typeof Cloud> = {
   search: Search,
 };
 
-export default function AppSlot({ onExit }: { onExit: () => void }) {
+export default function AppSlot({ onExit, appOpen }: { onExit: () => void; appOpen: boolean }) {
+  const idleRef = useRef<HTMLElement>(null);
   const [description, setDescription] = useState(EXAMPLE_PROMPT);
   const [state, setState] = useState<AnalysisState>("idle");
   const [analysis, setAnalysis] = useState<ArchitectureAnalysis | null>(null);
@@ -111,6 +112,21 @@ export default function AppSlot({ onExit }: { onExit: () => void }) {
   const [showSignDialog, setShowSignDialog] = useState(false);
   const [signerName, setSignerName] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
+
+  // Replay the idle section's CSS entrance animations when the app opens.
+  // The widget-enter elements animate on mount, but the app overlay is
+  // always in the DOM — so the initial animation runs while hidden. This
+  // effect resets and replays them when appOpen flips to true.
+  useEffect(() => {
+    if (!appOpen || !idleRef.current) return;
+    const animated = idleRef.current.querySelectorAll<HTMLElement>(".widget-enter");
+    animated.forEach((el) => {
+      el.classList.remove("widget-enter");
+      // Force reflow so the browser registers the class removal.
+      void el.offsetWidth;
+      el.classList.add("widget-enter");
+    });
+  }, [appOpen]);
 
   const handleAnalyze = useCallback(async () => {
     if (!description.trim()) {
@@ -418,32 +434,44 @@ ${formatCurrency(totalSavings)}/month
       <main className="flex-1 flex flex-col overflow-y-auto" aria-live="polite" aria-atomic="false">
         {/* Idle: input form (composer) */}
         {state === "idle" && (
-          <section className="flex-1 flex flex-col items-center justify-center px-4 py-20 md:py-32 max-w-3xl mx-auto w-full">
-            <p className="text-sm text-muted-foreground mb-8">
+          <section
+            ref={idleRef}
+            className="flex-1 flex flex-col items-center justify-center px-4 py-20 md:py-32 max-w-3xl mx-auto w-full"
+          >
+            <p
+              className="widget-enter text-sm text-muted-foreground mb-8"
+              style={{ ["--entry-y" as string]: "12px", ["--entry-delay" as string]: "0s" }}
+            >
               Cloud cost intelligence
             </p>
 
             <h1
-              className="text-center mb-6 max-w-2xl"
+              className="widget-enter text-center mb-6 max-w-2xl"
               style={{
                 fontFamily: "var(--font-serif)",
                 fontWeight: 400,
                 letterSpacing: "-0.015em",
                 lineHeight: 1.3,
                 fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)",
+                ["--entry-y" as string]: "24px",
+                ["--entry-delay" as string]: "0.08s",
               }}
             >
               Predict your API {" "}
               <em style={{ fontStyle: "italic" }}>costs before you build</em>
             </h1>
 
-            <p className="text-lg text-muted-foreground text-center mb-10 max-w-xl">
+            <p
+              className="widget-enter text-lg text-muted-foreground text-center mb-10 max-w-xl"
+              style={{ ["--entry-y" as string]: "16px", ["--entry-delay" as string]: "0.16s" }}
+            >
               AI reasons about your full API stack (cloud, AI tokens, payments, email) and shows
               your costs at 1K, 10K, and 100K users.
             </p>
 
             <form
-              className="w-full max-w-xl"
+              className="widget-enter w-full max-w-xl"
+              style={{ ["--entry-y" as string]: "32px", ["--entry-delay" as string]: "0.24s" }}
               onSubmit={(e) => {
                 e.preventDefault();
                 handleAnalyze();
