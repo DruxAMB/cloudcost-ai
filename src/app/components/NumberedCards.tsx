@@ -41,49 +41,33 @@ const items: {
   title: string;
   desc: string;
   palette: Palette;
-  overlay: "rollout" | "models" | "evals";
+  overlay: "services" | "projection" | "signature";
 }[] = featureCards.map((c, i) => ({
   num: String(i + 1).padStart(2, "0"),
   title: c.title,
   desc: c.desc,
   palette: (["lime", "blue", "orange", "pink", "yellow"] as const)[i % 5],
-  overlay: (["rollout", "evals", "models"] as const)[i % 3],
+  overlay: (["services", "projection", "signature"] as const)[i % 3],
 }));
 
-/** Small dark widget card floated over the gradient art. */
-function Overlay({ kind }: { kind: "rollout" | "models" | "evals" }) {
-  if (kind === "rollout") {
-    return (
-      <div className="w-[248px] rounded-[14px] bg-ld-dark-2/95 p-4 shadow-2xl backdrop-blur">
-        <div className="mb-3 text-[14px] text-white">Rollout duration</div>
-        {[
-          ["5%", "6"],
-          ["25%", "12"],
-        ].map(([pct, n]) => (
-          <div key={pct} className="mb-2 flex items-center gap-2 text-[11px] last:mb-0">
-            <span className="rounded-[6px] bg-white/10 px-2.5 py-1.5 text-white/80">{pct}</span>
-            <span className="text-white/45">for</span>
-            <span className="rounded-[6px] bg-white/10 px-2.5 py-1.5 text-white/80">{n}</span>
-            <span className="flex-1 rounded-[6px] bg-white/10 px-2 py-1.5 text-white/60">hours</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (kind === "models") {
+/** Small dark widget card floated over the gradient art.
+ *  Each overlay mirrors a real CloudCost AI output — no fabricated metrics. */
+function Overlay({ kind }: { kind: "services" | "projection" | "signature" }) {
+  if (kind === "services") {
     return (
       <div className="w-[248px] rounded-[14px] bg-ld-dark-2/95 p-4 shadow-2xl backdrop-blur">
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-[14px] text-white">Model Distribution</span>
+          <span className="text-[14px] text-white">Services identified</span>
           <span className="rounded-[5px] bg-white/10 px-1.5 py-0.5 font-mono text-[9px] text-white/45">
-            last 7d
+            5 found
           </span>
         </div>
         {[
-          ["GPT-5.5", 62],
-          ["Claude Sonnet 4.6", 45],
-          ["Claude Opus 4.7", 10],
+          ["AI", 48],
+          ["Hosting", 22],
+          ["Database", 14],
+          ["Payments", 10],
+          ["Storage", 6],
         ].map(([label, v]) => (
           <div key={label as string} className="mb-2.5 last:mb-0">
             <div className="mb-1 flex justify-between font-mono text-[10px]">
@@ -99,21 +83,40 @@ function Overlay({ kind }: { kind: "rollout" | "models" | "evals" }) {
     );
   }
 
+  if (kind === "projection") {
+    return (
+      <div className="w-[248px] rounded-[14px] bg-ld-dark-2/95 p-4 shadow-2xl backdrop-blur">
+        <div className="mb-3 text-[14px] text-white">Monthly cost projection</div>
+        {[
+          ["1K users", "$890"],
+          ["10K users", "$4,200"],
+          ["100K users", "$31,500"],
+        ].map(([scale, cost]) => (
+          <div key={scale} className="mb-2 flex items-center justify-between text-[11px] last:mb-0">
+            <span className="rounded-[6px] bg-white/10 px-2.5 py-1.5 text-white/80">{scale}</span>
+            <span className="flex-1 text-right font-mono text-white/70">{cost}</span>
+            <span className="rounded-[6px] bg-white/10 px-2 py-1.5 text-white/60">/mo</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="w-[248px] rounded-[14px] bg-ld-dark-2/95 p-4 shadow-2xl backdrop-blur">
-      <div className="mb-3 text-[14px] text-white">Online evals</div>
+      <div className="mb-3 text-[14px] text-white">Signature envelope</div>
       {[
-        ["toxicity", "pass"],
-        ["groundedness", "pass"],
-        ["pii-leak", "blocked"],
+        ["PDF generated", "done"],
+        ["Fields extracted", "done"],
+        ["Sent to signer", "pending"],
       ].map(([k, v]) => (
         <div key={k} className="mb-2 flex items-center justify-between text-[11px] last:mb-0">
           <span className="font-mono text-white/65">{k}</span>
           <span
             className="rounded-[90px] px-2 py-0.5 text-[10px] font-semibold"
             style={{
-              backgroundColor: v === "pass" ? "rgba(60,185,54,0.18)" : "rgba(251,60,79,0.18)",
-              color: v === "pass" ? "#3CB936" : "#FB3C4F",
+              backgroundColor: v === "done" ? "rgba(60,185,54,0.18)" : "rgba(235,195,70,0.18)",
+              color: v === "done" ? "#3CB936" : "#ebc346",
             }}
           >
             {v}
