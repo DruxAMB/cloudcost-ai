@@ -167,7 +167,12 @@ export default function AppSlot({ onExit, appOpen }: { onExit: () => void; appOp
 
       const xanoResult = await analyzeRes.json();
       // Xano returns { analysis: {...}, xanoId: number, xanoStoredAt: timestamp }
+      // But if the upstream Gemini call failed, analysis is { error: "..." }
       const analysisResult: ArchitectureAnalysis = xanoResult.analysis || xanoResult;
+      if (!analysisResult || !analysisResult.services || (analysisResult as { error?: string }).error) {
+        const apiError = (analysisResult as { error?: string })?.error;
+        throw new Error(apiError || "The analysis service returned an unexpected response. Please try again.");
+      }
       setXanoId(xanoResult.xanoId || null);
       setAnalysis(analysisResult);
 
