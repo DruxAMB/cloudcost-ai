@@ -3,6 +3,7 @@
 > Describe your app idea in plain English. CloudCost AI identifies the cloud services you need, projects costs from 1K to 100K users, and sends a signed cost report for stakeholder approval.
 
 **Live demo:** [cloudcost-ai.druxamb.dev](https://cloudcost-ai.druxamb.dev/)
+**Demo video:** [https://youtu.be/C1UGOzpRDek](https://youtu.be/C1UGOzpRDek)
 
 Built for the World Cloudx Hackathon 2026 by Team DruxAMB.
 
